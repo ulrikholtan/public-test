@@ -42,7 +42,7 @@ jobs:
 
       - name: Commit changes (if any)
         run: |
-          git add .
+          git add testfile.md
           git diff --staged --quiet || git commit -m "Sync public repo updates"
 
       - name: Push changes to private repository
