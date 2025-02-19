@@ -3,7 +3,7 @@ name: Sync Public to Internal Repo
 on:
   schedule:
     - cron: '0 5 * * * *' # Runs at 5 AM?
-  workflow_dispatch:
+  workflow_dispatch: # Manual Trigger
   push:
     branches:
       - main
@@ -23,7 +23,8 @@ jobs:
       - name: Clone public repository
         run: |
           git clone --depth=1 https://github.com/ulrikholtan/public-test.git public_repo
-          rsync -av --exclude='.git' public_repo/ ./
+          rsync -av --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./
+          
 
       - name: Commit changes if any
         run: |
