@@ -23,27 +23,19 @@ jobs:
       - name: Clone public repository
         run: |
           git clone --depth=1 https://github.com/ulrikholtan/public-test.git public_repo
-          rsync -av --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./
-
+          rsync -av --delete --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./
 
       - name: Configure Git
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions"
 
-      - name: Commit unstaged changes (if any)
+      - name: Reset internal repo to match public repo
         run: |
           git add .
-          git diff --staged --quiet || git commit -m "Auto-commit unstaged changes before rebase"
-
-      - name: Pull latest changes from private repo
-        run: |
-          git pull --rebase https://x-access-token:${{ secrets.GH_PAT }}@github.com/ulrikholtan/public-test.git main
-
-      - name: Commit changes (if any)
-        run: |
-          git add testfile.md
-          git diff --staged --quiet || git commit -m "Sync public repo updates"
+          git commit -m "Sync public repo updates" || echo "No changes to commit"
+          git fetch origin main
+          git reset --hard origin/main # Overwrite internal repo with public repo
 
       - name: Push changes to private repository
         run: |
