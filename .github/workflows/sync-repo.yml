@@ -1,0 +1,37 @@
+name: Sync Public to Internal Repo
+
+on:
+  schedule:
+    - cron: '0 5 * * * *' # Runs at 5 AM?
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout internal repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Clone public repository
+        run: |
+          git clone --depth=1 https://github.com/ulrikholtan/public-test.git public_repo
+          rsync -av --exclude='.git' public_repo/ ./
+
+      - name: Commit changes if any
+        run: |
+          git config --gloval user.email "actions@github.com"
+          git config --global user.name "github-actions"
+          git add .
+          git diff --staged --quiet || git commit -m "Sync public repo changes"
+
+      - name: Push changes to internal repository
+        run: |
+          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/ulrikholtan/public-test.git main
