@@ -20,10 +20,14 @@ jobs:
           persist-credentials: false
           fetch-depth: 0
 
+      - name: Ensure clean workspace
+        run: |
+          rm -rf public_repo # Delete old cloned repo if it exists
+
       - name: Clone public repository
         run: |
           git clone --depth=1 https://github.com/ulrikholtan/public-test.git public_repo
-          rsync -av --delete --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./
+          rsync -av --delete --ignore-missing-args --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./
 
       - name: Configure Git
         run: |
@@ -39,4 +43,4 @@ jobs:
 
       - name: Push changes to private repository
         run: |
-          git push https://x-access-token:${{ secrets.GH_PAT }}@github.com/ulrikholtan/public-test.git main
+          git push --force https://x-access-token:${{ secrets.GH_PAT }}@github.com/ulrikholtan/public-test.git main
