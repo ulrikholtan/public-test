@@ -2,7 +2,7 @@ name: Sync Public to Internal Repo
 
 on:
   schedule:
-    - cron: '0 5 * * * *' # Runs at 5 AM?
+    - cron: '00 02 * * *' # Runs at 5 AM?
   workflow_dispatch: # Manual Trigger
   push:
     branches:
