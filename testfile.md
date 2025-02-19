@@ -1,3 +1,2 @@
 # This is my testfile
-This was written in the public repo
-posting an update
+New test in the public repo
