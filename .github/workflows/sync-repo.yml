@@ -27,19 +27,16 @@ jobs:
       - name: Clone public repository
         run: |
           git clone --depth=1 https://github.com/ulrikholtan/public-test.git public_repo
-          rsync -av --delete --ignore-missing-args --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./
+
+      - name: Sync files from public to private repo
+        run: |
+          rsync -av --delete --ignore-errors --exclude='.git' --exclude='README.md' --exclude='.github/' public_repo/ ./ || true
+          rm -rf public_repo # Ensure the directory is fully removed
 
       - name: Configure Git
         run: |
           git config --global user.email "actions@github.com"
           git config --global user.name "github-actions"
-
-      - name: Reset internal repo to match public repo
-        run: |
-          git add .
-          git commit -m "Sync public repo updates" || echo "No changes to commit"
-          git fetch origin main
-          git reset --hard origin/main # Overwrite internal repo with public repo
 
       - name: Push changes to private repository
         run: |
